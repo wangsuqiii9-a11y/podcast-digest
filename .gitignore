@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# 本地测试输出
+test_output/
+
+# 日志与缓存
+*.log
+.DS_Store
+
+# 密钥与本地环境
+.env
+.env.*
+!.env.example
+
+# IDE
+.idea/
+.vscode/
+
+# 不要忽略 hot_output/ —— 它就是要发布的站点内容

@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOP 05 · 带家人旅行：难啊！孩儿苦心计划，不如二老灵机一动！ — 播客总结报告</title>
+    <style>
+        :root {
+            --bg: #f4f6fa;
+            --card-bg: #ffffff;
+            --text: #2c3e50;
+            --text-secondary: #6b7785;
+            --accent: #4a6fa5;
+            --accent-2: #6b8cba;
+            --accent-light: #e8eef5;
+            --border: #e3e8f0;
+            --tag-bg: #f0f4f8;
+            --tag-text: #4a6fa5;
+            --success: #2ecc71;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            padding: 20px;
+            padding-bottom: 140px; /* 给浮动播放器留位 */
+        }
+        .container { max-width: 920px; margin: 0 auto; }
+
+        .header {
+            background: linear-gradient(135deg, #4a6fa5, #6b8cba);
+            color: white;
+            padding: 40px 30px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(74, 111, 165, 0.18);
+        }
+        .header h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+        .header .meta { font-size: 14px; opacity: 0.9; }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        }
+        .card h2 {
+            font-size: 18px;
+            color: var(--accent);
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--accent-light);
+        }
+
+        .themes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+        .theme-tag {
+            background: var(--tag-bg);
+            color: var(--tag-text);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .theme-tag .count {
+            background: var(--accent);
+            color: white;
+            border-radius: 10px;
+            padding: 1px 6px;
+            font-size: 11px;
+            margin-left: 4px;
+        }
+
+        .insights { margin-top: 12px; padding-left: 18px; }
+        .insights li { margin-bottom: 6px; color: var(--text-secondary); font-size: 14px; }
+
+        /* ============ 榜单 Hero / 排名徽章 ============ */
+        .ranking-hero {
+            background: linear-gradient(135deg, #fff5e6 0%, #ffe8d6 50%, #ffe1f0 100%);
+            border-radius: 16px;
+            padding: 22px 24px 24px;
+            margin-bottom: 22px;
+            box-shadow: 0 4px 16px rgba(255, 122, 89, 0.15);
+            border: 1px solid rgba(255, 138, 101, 0.18);
+        }
+        .ranking-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff6b6b, #ff9966);
+            color: #fff;
+            font-weight: 700;
+            font-size: 15px;
+            letter-spacing: 0.6px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            margin-bottom: 14px;
+            box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+        }
+        .ranking-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 14px;
+        }
+        @media (min-width: 1100px) {
+            .ranking-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+        }
+        .ranking-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 12px;
+            padding: 14px 16px;
+            text-decoration: none;
+            color: var(--text);
+            transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+            border: 1px solid rgba(255, 138, 101, 0.12);
+        }
+        .ranking-item:hover {
+            transform: translateY(-2px);
+            background: #fff;
+            box-shadow: 0 6px 18px rgba(255, 122, 89, 0.18);
+        }
+        .ranking-num {
+            flex-shrink: 0;
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 800;
+            color: #fff;
+            font-family: 'SF Mono', 'Menlo', monospace;
+        }
+        .ranking-item.rank-top .ranking-num {
+            background: linear-gradient(135deg, #ff5e3a, #ff2a68);
+            box-shadow: 0 3px 10px rgba(255, 94, 58, 0.4);
+        }
+        .ranking-item.rank-rest .ranking-num {
+            background: linear-gradient(135deg, #6b8cba, #4a6fa5);
+        }
+        .ranking-info { flex: 1; min-width: 0; }
+        .ranking-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+            line-height: 1.4;
+            margin-bottom: 4px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .ranking-meta {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        .rank-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff5e3a, #ff2a68);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.6px;
+            padding: 3px 10px;
+            border-radius: 12px;
+            margin-right: 8px;
+            vertical-align: middle;
+            box-shadow: 0 2px 6px rgba(255, 94, 58, 0.3);
+        }
+
+        .ranking-update {
+            font-size: 12px;
+            color: #b8552c;
+            margin-bottom: 12px;
+            opacity: 0.85;
+        }
+        .ranking-cta {
+            font-size: 12px;
+            color: #ff5e3a;
+            margin-top: 10px;
+            font-weight: 600;
+            letter-spacing: 0.4px;
+        }
+
+        .ranking-lead {
+            margin-top: 8px;
+            font-size: 13.5px;
+            line-height: 1.65;
+            color: #444;
+            background: rgba(255, 247, 240, 0.8);
+            border-left: 3px solid #ffb199;
+            padding: 8px 12px;
+            border-radius: 6px;
+        }
+        .ranking-bullets {
+            margin: 10px 0 0;
+            padding: 0;
+            list-style: none;
+        }
+        .ranking-bullets li {
+            position: relative;
+            padding: 3px 0 3px 20px;
+            font-size: 13px;
+            line-height: 1.55;
+            color: #333;
+        }
+        .ranking-bullets li::before {
+            content: "▸";
+            position: absolute;
+            left: 4px;
+            top: 3px;
+            color: #ff5e3a;
+            font-weight: 700;
+        }
+        .ranking-tags {
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .ranking-tag {
+            font-size: 11px;
+            color: #b8552c;
+            background: #fff3ec;
+            border: 1px solid #ffd3bf;
+            padding: 2px 8px;
+            border-radius: 10px;
+            line-height: 1.6;
+        }
+
+        .back-bar {
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: #fff;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            padding: 7px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all .15s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .back-btn:hover {
+            background: var(--accent);
+            color: #fff;
+            transform: translateX(-2px);
+        }
+        .follow-btn {
+            background: #fff;
+            color: #b8552c;
+            border: 1px solid #ffd3bf;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all .15s;
+        }
+        .follow-btn[data-active="true"] {
+            background: linear-gradient(135deg, #ff5e3a, #ff2a68);
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 3px 10px rgba(255, 94, 58, 0.35);
+        }
+        .follow-btn:hover { transform: translateY(-1px); }
+        .ep-user-badge {
+            margin-left: auto;
+            font-size: 12px;
+            color: #888;
+            background: #f6f6f6;
+            border: 1px solid #eee;
+            border-radius: 12px;
+            padding: 4px 10px;
+        }
+        .ep-user-badge[data-logged="1"] { color: var(--accent); border-color: #ffd3bf; background: #fff7f2; }
+        .ep-login-link { font-size: 12px; color: #888; text-decoration: none; }
+        .ep-login-link:hover { color: var(--accent); }
+
+        /* —— 首页卡片等高 + 内容裁剪 + 等宽锁定 —— */
+        .ranking-grid { width: 100%; }
+        .ranking-grid > .ranking-item { min-width: 0; width: 100%; box-sizing: border-box; }
+        .ranking-item { min-height: 188px; }
+        .ranking-info {
+            display: flex; flex-direction: column;
+            min-width: 0; flex: 1 1 0;
+            overflow: hidden;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+        .ranking-info > * { min-width: 0; max-width: 100%; }
+        .ranking-cta { margin-top: auto; }
+        .ranking-title, .ranking-meta {
+            overflow-wrap: anywhere; word-break: break-word;
+        }
+        .ranking-lead {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+        .ranking-bullets { max-width: 100%; }
+        .ranking-bullets li {
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+        .ranking-tags { max-width: 100%; }
+
+        /* —— 首页 hero/筛选/用户区 —— */
+        .hero-row {
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 10px; flex-wrap: wrap;
+        }
+        .user-area { display: flex; align-items: center; gap: 8px; }
+        .user-badge {
+            font-size: 12px; color: #888; background: #f6f6f6;
+            border: 1px solid #eee; border-radius: 12px; padding: 4px 10px;
+        }
+        .user-badge[data-logged="1"] { color: var(--accent); border-color: #ffd3bf; background: #fff7f2; }
+        .login-btn {
+            font-size: 12px; color: #fff; background: linear-gradient(135deg,#ff5e3a,#ff2a68);
+            padding: 6px 12px; border-radius: 14px; text-decoration: none; font-weight: 600;
+            box-shadow: 0 2px 8px rgba(255, 94, 58, 0.3);
+        }
+        .login-btn:hover { transform: translateY(-1px); }
+        .filter-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 12px 0 4px; }
+        .filter-btn {
+            background: #fff; color: var(--accent); border: 1px solid #ffd3bf;
+            border-radius: 14px; padding: 5px 14px; font-size: 12px; font-weight: 600;
+            cursor: pointer; transition: all .15s;
+        }
+        .filter-btn[data-active="true"] {
+            background: linear-gradient(135deg,#ff5e3a,#ff2a68);
+            color: #fff; border-color: transparent;
+            box-shadow: 0 2px 8px rgba(255, 94, 58, 0.3);
+        }
+        .filter-tip { font-size: 12px; color: #888; }
+
+        /* —— 我的随笔区域（首页） —— */
+        .notes-card-head {
+            display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;
+        }
+        .notes-card-meta { display: flex; align-items: center; gap: 8px; }
+        .notes-link { font-size: 12px; color: var(--accent); text-decoration: none; }
+        .notes-link:hover { text-decoration: underline; }
+        .my-notes-list { display: flex; flex-direction: column; gap: 8px; }
+        .my-note-item {
+            display: block; padding: 10px 12px; border-radius: 10px;
+            background: #fff7f2; border: 1px solid #ffe1ce; text-decoration: none; color: #333;
+            transition: all .15s;
+        }
+        .my-note-item:hover { background: #ffeede; transform: translateX(2px); }
+        .my-note-head { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+        .my-note-title { font-size: 13.5px; font-weight: 700; color: var(--accent);
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex:1; }
+        .my-note-time { font-size: 11.5px; color: #aaa; flex-shrink: 0; }
+        .my-note-text {
+            margin-top: 4px; font-size: 13px; color: #555; line-height: 1.55;
+            display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+        }
+        .notes-empty { font-size: 13px; color: #999; padding: 14px 0; text-align: center; }
+
+        /* —— 详情页右下浮动随笔抽屉 —— */
+        .notes-fab {
+            position: fixed; right: 20px; bottom: 110px; z-index: 50;
+            width: 52px; height: 52px; border-radius: 50%;
+            background: linear-gradient(135deg,#ff5e3a,#ff2a68); color:#fff;
+            border:0; font-size: 22px; cursor: pointer;
+            box-shadow: 0 6px 20px rgba(255, 94, 58, 0.4); transition: transform .15s;
+        }
+        .notes-fab:hover { transform: scale(1.05); }
+        .notes-fab > span {
+            position: absolute; top: 6px; right: 8px; font-size: 8px; color: #fff200;
+        }
+        .notes-panel {
+            position: fixed; right: 0; top: 0; bottom: 0; width: 360px; max-width: 92vw;
+            background: #fff; box-shadow: -10px 0 30px rgba(0,0,0,0.12); z-index: 60;
+            transform: translateX(100%); transition: transform .25s ease;
+            display: flex; flex-direction: column; padding: 16px;
+        }
+        .notes-panel[data-open="1"] { transform: translateX(0); }
+        .notes-panel-head { display: flex; align-items: center; justify-content: space-between; }
+        .notes-panel-title { font-size: 15px; font-weight: 700; color: var(--accent); }
+        .notes-panel-close {
+            border:0; background: #f6f6f6; width: 28px; height: 28px;
+            border-radius: 50%; cursor: pointer; font-size: 14px;
+        }
+        .notes-panel-close:hover { background: #ffebe0; color: var(--accent); }
+        .notes-panel-meta { display: flex; align-items: center; gap: 8px; margin: 10px 0; }
+        .notes-panel-status { font-size: 11px; color: #888; }
+        .notes-editor {
+            flex: 1; width: 100%; border: 1px solid #eee; border-radius: 10px;
+            padding: 10px 12px; font-size: 14px; line-height: 1.6; color: #333;
+            resize: none; outline: none; font-family: inherit;
+        }
+        .notes-editor:focus { border-color: var(--accent); }
+        .notes-panel-tip { font-size: 11px; color: #aaa; margin-top: 8px; }
+
+        .episode-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            border-left: 4px solid var(--accent);
+        }
+        .episode-card h3 { font-size: 18px; color: var(--text); margin-bottom: 8px; }
+        .episode-meta {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 14px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 16px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 14px;
+            border-radius: 18px;
+            border: 1px solid var(--accent);
+            background: white;
+            color: var(--accent);
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all .15s;
+        }
+        .action-btn:hover { background: var(--accent-light); }
+        .action-btn.primary {
+            background: var(--accent);
+            color: white;
+        }
+        .action-btn.primary:hover { background: #3d5d8a; }
+
+        .summary {
+            background: linear-gradient(180deg, var(--accent-light) 0%, #ffffff 100%);
+            border-radius: 12px;
+            padding: 18px 20px 20px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            border: 1px solid rgba(74, 111, 165, 0.12);
+        }
+        .summary-title {
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--accent);
+            margin-bottom: 14px;
+            letter-spacing: 0.5px;
+        }
+        .summary-cards {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+        .summary-card {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 14px 16px 16px;
+            border-left: 4px solid var(--accent);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+            transition: transform 0.18s ease, box-shadow 0.18s ease;
+        }
+        .summary-card:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(74, 111, 165, 0.12);
+        }
+        .summary-card-head {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+        .summary-card-index {
+            display: inline-block;
+            min-width: 30px;
+            padding: 2px 8px;
+            background: var(--accent);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 700;
+            border-radius: 12px;
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+        .summary-card-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        .summary-card-lead {
+            font-size: 13px;
+            color: #6c7a8b;
+            margin: 4px 0 8px;
+            font-style: italic;
+            line-height: 1.6;
+        }
+        .summary-card-body {
+            font-size: 14px;
+            line-height: 1.85;
+            color: var(--text);
+            white-space: normal;
+            word-break: break-word;
+        }
+        @media (min-width: 900px) {
+            .summary-cards { grid-template-columns: 1fr 1fr; }
+            .summary-card:first-child,
+            .summary-card:nth-child(2) { grid-column: span 1; }
+        }
+
+        .timeline { margin-bottom: 16px; }
+        .timeline h4 { font-size: 14px; color: var(--accent); margin-bottom: 10px; }
+        .timeline-list { display: flex; flex-direction: column; gap: 4px; }
+        .timeline-item {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            padding: 8px 10px;
+            font-size: 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background .15s;
+        }
+        .timeline-item:hover { background: var(--accent-light); }
+        .timeline-item:focus { outline: 2px solid var(--accent); outline-offset: 2px; }
+        .timeline-time {
+            background: var(--accent);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-family: 'SF Mono', Menlo, monospace;
+            font-size: 12px;
+            white-space: nowrap;
+            min-width: 78px;
+            text-align: center;
+            flex-shrink: 0;
+            font-weight: 600;
+        }
+        .timeline-item:hover .timeline-time { background: #3d5d8a; }
+        .timeline-content { color: var(--text); flex: 1; }
+
+        .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+        .tag {
+            background: var(--tag-bg);
+            color: var(--tag-text);
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+
+        .footer {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 12px;
+            padding: 20px 0 10px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            color: var(--accent);
+            margin: 24px 0 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--accent-light);
+        }
+
+        /* 浮动播放器 */
+        .audio-bar {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.97);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-top: 1px solid var(--border);
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+            z-index: 50;
+            padding: 12px 20px;
+        }
+        .audio-bar-inner {
+            max-width: 920px;
+            margin: 0 auto;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .audio-meta { min-width: 180px; flex-shrink: 0; }
+        .audio-title { font-size: 13px; font-weight: 600; color: var(--text); }
+        .audio-current { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+        .speed-group {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .speed-label { font-size: 12px; color: var(--text-secondary); margin-right: 4px; }
+        .speed-btn {
+            background: white;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 4px 10px;
+            border-radius: 14px;
+            font-size: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all .15s;
+        }
+        .speed-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .speed-btn[data-active="true"] {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        @media (max-width: 640px) {
+            body { padding: 12px; padding-bottom: 200px; }
+            .header { padding: 24px 16px; }
+            .header h1 { font-size: 22px; }
+            .episode-card { padding: 16px; }
+            .audio-bar-inner { gap: 8px; }
+            .audio-meta { min-width: 100%; }
+            #audioPlayer { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔥 TOP 05 · 带家人旅行：难啊！孩儿苦心计划，不如二老灵机一动！</h1>
+            <div class="meta">小宇宙热门榜 Top 10 · 第 5 名</div>
+        </div>
+        <div class="back-bar">
+            <a class="back-btn" href="../index.html">← 返回榜单首页</a>
+            <button class="follow-btn" id="followBtn" data-epkey="episode_05" data-eptitle="带家人旅行：难啊！孩儿苦心计划，不如二老灵机一动！" onclick="toggleFollow()">☆ 加入我的关注榜</button>
+            <span class="ep-user-badge" id="epUserBadge">未登录</span>
+            <a class="ep-login-link" href="../login.html">切换账号</a>
+        </div>
+
+        <div class="episode-card" id="ep-5">
+            <h3><span class="rank-badge">TOP 05</span> 带家人旅行：难啊！孩儿苦心计划，不如二老灵机一动！</h3>
+            <div class="episode-meta">
+                <span>📻 凹凸电波</span>
+                <span>⏱️ 68 分钟</span>
+                <span>📅 Mon, 18 Ma</span>
+                
+            </div>
+            <div class="actions"><button class="action-btn" onclick="playSegment(0, 0, '从头开始')">▶ 从头收听</button></div>
+            <div class="summary">
+                <div class="summary-title">📌 内容概要</div>
+                <div class="summary-cards">
+                    <div class="summary-card">
+                        <div class="summary-card-head"><span class="summary-card-index">01</span><span class="summary-card-title">节目标题速读</span></div>
+                        <div class="summary-card-lead">带家人旅行：难啊！孩儿苦心计划，不如二老灵机一动！</div>
+                        <div class="summary-card-body">带家人旅行：难啊！孩儿苦心计划，不如二老灵机一动！</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-card-head"><span class="summary-card-index">02</span><span class="summary-card-title">节目信息</span></div>
+                        <div class="summary-card-lead">出自播客《凹凸电波》，时长约 68 分钟，发布于 18 May 2026。</div>
+                        <div class="summary-card-body">出自播客《凹凸电波》，时长约 68 分钟，发布于 18 May 2026。</div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="summary-card-head"><span class="summary-card-index">03</span><span class="summary-card-title">上榜原因</span></div>
+                        <div class="summary-card-lead">本期在当前热门榜中排名第 5 位，由听众讨论度与播放热度共同推选。</div>
+                        <div class="summary-card-body">本期在当前热门榜中排名第 5 位，由听众讨论度与播放热度共同推选。</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="audio-bar" id="audioBar">
+            <div class="audio-bar-inner">
+                <div class="audio-meta">
+                    <div class="audio-title" id="audioTitle">未在播放</div>
+                    <div class="audio-current" id="audioCurrent">点击章节速览中的时间码即可播放</div>
+                </div>
+                <audio id="audioPlayer" controls preload="none" style="flex:1; min-width: 240px;"></audio>
+                <div class="speed-group">
+                    <span class="speed-label">倍速</span>
+                    <button class="speed-btn" data-speed="0.75">0.75×</button>
+                    <button class="speed-btn" data-speed="1" data-active="true">1×</button>
+                    <button class="speed-btn" data-speed="1.25">1.25×</button>
+                    <button class="speed-btn" data-speed="1.5">1.5×</button>
+                    <button class="speed-btn" data-speed="2">2×</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            报告生成时间：2026-05-22 02:15 · Podcast Digest
+        </div>
+    </div>
+
+    <!-- 个人随笔抽屉 -->
+    <button class="notes-fab" id="notesFab" onclick="toggleNotesPanel()" title="打开随笔">📝<span id="notesFabDot" style="display:none">●</span></button>
+    <aside class="notes-panel" id="notesPanel" aria-hidden="true">
+        <div class="notes-panel-head">
+            <div class="notes-panel-title">📝 我的随笔</div>
+            <button class="notes-panel-close" onclick="toggleNotesPanel()" title="收起">✕</button>
+        </div>
+        <div class="notes-panel-meta">
+            <span id="notesPanelUser" class="user-badge">未登录</span>
+            <span id="notesPanelStatus" class="notes-panel-status">就绪</span>
+        </div>
+        <textarea id="notesEditor" class="notes-editor"
+            placeholder="写下你听这一集的感想、金句、行动项……（自动保存到本地）"></textarea>
+        <div class="notes-panel-tip">仅保存在你这台设备上，按账号隔离；可在首页『我的随笔』回顾全部。</div>
+    </aside>
+
+    <script>
+        const EPISODES = [{"index": 0, "audio_url": "https://jt.ximalaya.com//GKwRIMAN4H7lAfnWKASa-UUB.m4a?channel=rss&amp;album_id=19206382&amp;track_id=977381224&amp;uid=96384113&amp;jt=https://aod.cos.tx.xmcdn.com/storages/fd1c-audiofreehighqps/21/A5/GKwRIMAN4H7lAfnWKASa-UUB.m4a", "episode_url": "", "title": "带家人旅行：难啊！孩儿苦心计划，不如二老灵机一动！"}];
+        const EP_KEY = "episode_05";
+        const EP_TITLE = "带家人旅行：难啊！孩儿苦心计划，不如二老灵机一动！";
+        const audio = document.getElementById('audioPlayer');
+        const audioTitle = document.getElementById('audioTitle');
+        const audioCurrent = document.getElementById('audioCurrent');
+        let currentEpisode = -1;
+
+        function playSegment(epIndex, seconds, contentText) {
+            const ep = EPISODES[epIndex];
+            if (!ep || !ep.audio_url) {
+                alert('该集没有可用的音频地址');
+                return;
+            }
+            if (currentEpisode !== epIndex) {
+                audio.src = ep.audio_url;
+                currentEpisode = epIndex;
+                audioTitle.textContent = ep.title || '正在播放';
+            }
+            const start = () => {
+                try { audio.currentTime = seconds; } catch (e) {}
+                audio.play().catch(() => {});
+                audioCurrent.textContent = contentText || '';
+            };
+            if (audio.readyState >= 1) {
+                start();
+            } else {
+                audio.addEventListener('loadedmetadata', start, { once: true });
+                audio.load();
+            }
+            document.getElementById('audioBar').scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
+
+        document.querySelectorAll('.speed-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const speed = parseFloat(btn.dataset.speed);
+                audio.playbackRate = speed;
+                document.querySelectorAll('.speed-btn').forEach(b => b.removeAttribute('data-active'));
+                btn.setAttribute('data-active', 'true');
+            });
+        });
+        window.playSegment = playSegment;
+
+        // —— 用户/随笔/关注 ——
+        const PD_USER_KEY = 'pd_current_user';
+        function pdGetUser() { return localStorage.getItem(PD_USER_KEY) || ''; }
+        function pdNotesKey(user) { return 'pd_notes::' + (user || 'guest'); }
+        function pdFollowKey(user) { return 'pd_follow::' + (user || 'guest'); }
+        function pdLoadNotes(user) {
+            try { return JSON.parse(localStorage.getItem(pdNotesKey(user)) || '{}'); }
+            catch (e) { return {}; }
+        }
+        function pdSaveNotes(user, notes) { localStorage.setItem(pdNotesKey(user), JSON.stringify(notes)); }
+        function pdLoadFollow(user) {
+            try { return JSON.parse(localStorage.getItem(pdFollowKey(user)) || '[]'); }
+            catch (e) { return []; }
+        }
+        function pdSaveFollow(user, list) { localStorage.setItem(pdFollowKey(user), JSON.stringify(list)); }
+
+        function refreshUserUI() {
+            const user = pdGetUser();
+            ['epUserBadge','notesPanelUser'].forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.textContent = user ? ('@' + user) : '未登录（游客模式）';
+                el.dataset.logged = user ? '1' : '0';
+            });
+            const fb = document.getElementById('followBtn');
+            const follows = new Set(pdLoadFollow(user));
+            const on = follows.has(EP_KEY);
+            fb.dataset.active = on ? 'true' : 'false';
+            fb.textContent = on ? '★ 已加入关注榜' : '☆ 加入我的关注榜';
+        }
+
+        function toggleFollow() {
+            const user = pdGetUser();
+            const list = pdLoadFollow(user);
+            const idx = list.indexOf(EP_KEY);
+            if (idx >= 0) list.splice(idx, 1); else list.push(EP_KEY);
+            pdSaveFollow(user, list);
+            refreshUserUI();
+        }
+        window.toggleFollow = toggleFollow;
+
+        // 随笔抽屉
+        const editor = document.getElementById('notesEditor');
+        const statusEl = document.getElementById('notesPanelStatus');
+        const fabDot = document.getElementById('notesFabDot');
+
+        function loadEpNote() {
+            const user = pdGetUser();
+            const notes = pdLoadNotes(user);
+            const cur = notes[EP_KEY] || {};
+            editor.value = cur.text || '';
+            fabDot.style.display = (cur.text && cur.text.trim()) ? 'inline' : 'none';
+        }
+        let saveTimer = null;
+        editor.addEventListener('input', () => {
+            statusEl.textContent = '编辑中…';
+            clearTimeout(saveTimer);
+            saveTimer = setTimeout(() => {
+                const user = pdGetUser();
+                const notes = pdLoadNotes(user);
+                notes[EP_KEY] = {
+                    text: editor.value,
+                    epTitle: EP_TITLE,
+                    updatedAt: Date.now()
+                };
+                pdSaveNotes(user, notes);
+                statusEl.textContent = '✔ 已保存 ' + new Date().toLocaleTimeString('zh-CN', {hour12:false});
+                fabDot.style.display = editor.value.trim() ? 'inline' : 'none';
+            }, 350);
+        });
+        function toggleNotesPanel() {
+            const panel = document.getElementById('notesPanel');
+            const now = panel.dataset.open === '1';
+            panel.dataset.open = now ? '0' : '1';
+            panel.setAttribute('aria-hidden', now ? 'true' : 'false');
+        }
+        window.toggleNotesPanel = toggleNotesPanel;
+
+        refreshUserUI();
+        loadEpNote();
+        window.addEventListener('storage', () => { refreshUserUI(); loadEpNote(); });
+    </script>
+</body>
+</html>

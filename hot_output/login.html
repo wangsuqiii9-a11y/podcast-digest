@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>登录 · Podcast Digest</title>
+<style>
+:root { --accent:#ff5e3a; --bg:#fff7f2; --text:#333; }
+* { box-sizing: border-box; }
+body { margin:0; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: linear-gradient(135deg,#ffe9dc,#fff7f2); min-height:100vh;
+  display:flex; align-items:center; justify-content:center; color:var(--text); }
+.box { width: 360px; max-width: 92vw; background:#fff; border-radius: 18px;
+  padding: 30px 28px; box-shadow: 0 12px 40px rgba(255,122,89,0.18); }
+h1 { margin:0 0 6px; font-size: 20px; }
+.sub { margin:0 0 18px; color:#888; font-size: 13px; }
+label { display:block; font-size: 12px; color:#666; margin: 12px 0 4px; }
+input { width:100%; padding: 9px 12px; border:1px solid #eee; border-radius: 10px;
+  font-size: 14px; outline: none; transition: border .15s; }
+input:focus { border-color: var(--accent); }
+.btn { display:block; width:100%; margin-top: 16px; padding: 10px; border:0;
+  border-radius: 10px; background: linear-gradient(135deg,#ff5e3a,#ff2a68);
+  color:#fff; font-weight: 700; font-size: 14px; cursor: pointer;
+  box-shadow: 0 4px 14px rgba(255,94,58,0.35); }
+.btn.ghost { background: #fff; color: var(--accent); border: 1px solid var(--accent);
+  box-shadow: none; }
+.row { display:flex; gap:8px; }
+.row .btn { margin-top: 0; }
+.tip { margin-top: 14px; font-size: 12px; color:#999; text-align:center; }
+.user-list { margin-top: 14px; max-height: 120px; overflow:auto; border:1px dashed #f0d4c4; border-radius:10px; padding:6px; }
+.user-item { display:flex; justify-content:space-between; align-items:center;
+  padding:6px 8px; border-radius:6px; }
+.user-item:hover { background: #fff7f2; }
+.user-item button { background:none; border:0; color:var(--accent); cursor:pointer; font-size:12px; }
+.current { font-weight:700; color: var(--accent); }
+.back { display:block; text-align:center; margin-top: 14px; font-size: 12px; color:#888; text-decoration:none; }
+.back:hover { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="box">
+  <h1>👤 个人账号</h1>
+  <p class="sub">本地账号体系：账号、随笔、关注榜全部存在你这台设备上，不上传服务器。</p>
+
+  <label>用户名（拼音/英文，2–20 位）</label>
+  <input id="username" placeholder="例如 wsq" maxlength="20" autocomplete="off" />
+
+  <label>口令（可选，仅本机校验）</label>
+  <input id="password" type="password" placeholder="留空也可以直接使用" autocomplete="off" />
+
+  <div class="row" style="margin-top:14px;">
+    <button class="btn" onclick="doLogin()">登录 / 注册</button>
+    <button class="btn ghost" onclick="doGuest()">游客模式</button>
+  </div>
+
+  <div class="user-list" id="userList"></div>
+  <div class="tip" id="tip"></div>
+  <a class="back" href="index.html">← 返回榜单首页</a>
+</div>
+
+<script>
+const USERS_KEY = 'pd_users';
+const CUR_KEY = 'pd_current_user';
+function getUsers(){ try { return JSON.parse(localStorage.getItem(USERS_KEY)||'{}'); } catch(e){ return {}; } }
+function setUsers(u){ localStorage.setItem(USERS_KEY, JSON.stringify(u)); }
+function setCur(name){ if(name) localStorage.setItem(CUR_KEY, name); else localStorage.removeItem(CUR_KEY); }
+function getCur(){ return localStorage.getItem(CUR_KEY) || ''; }
+
+function tip(msg, ok){
+  const t = document.getElementById('tip');
+  t.textContent = msg;
+  t.style.color = ok ? '#2e7d32' : '#c62828';
+}
+
+function doLogin(){
+  const name = (document.getElementById('username').value || '').trim();
+  const pwd = document.getElementById('password').value || '';
+  if (!name || name.length < 2) return tip('用户名至少 2 位', false);
+  if (!/^[a-zA-Z0-9_\-]+$/.test(name)) return tip('用户名只能包含字母数字、下划线和短横线', false);
+  const users = getUsers();
+  if (users[name] === undefined) {
+    users[name] = { pwd: pwd, createdAt: Date.now() };
+    setUsers(users);
+    setCur(name);
+    tip('注册并登录成功：' + name, true);
+  } else {
+    if (users[name].pwd && users[name].pwd !== pwd) return tip('口令错误', false);
+    setCur(name);
+    tip('欢迎回来，' + name, true);
+  }
+  renderList();
+  setTimeout(()=>{ location.href='index.html'; }, 600);
+}
+
+function doGuest(){
+  setCur('');
+  tip('已切换为游客模式', true);
+  setTimeout(()=>{ location.href='index.html'; }, 400);
+}
+
+function switchTo(name){ setCur(name); renderList(); tip('已切换为：' + name, true); }
+function removeUser(name){
+  if (!confirm('删除账号 ' + name + ' 吗？该账号下的随笔也会一并删除。')) return;
+  const users = getUsers();
+  delete users[name];
+  setUsers(users);
+  localStorage.removeItem('pd_notes::' + name);
+  localStorage.removeItem('pd_follow::' + name);
+  if (getCur() === name) setCur('');
+  renderList();
+}
+function renderList(){
+  const users = getUsers();
+  const cur = getCur();
+  const el = document.getElementById('userList');
+  const names = Object.keys(users).sort();
+  if (!names.length) { el.style.display='none'; return; } else el.style.display='block';
+  el.innerHTML = '<div style="font-size:12px;color:#888;padding:4px 8px;">本机账号：</div>' +
+    names.map(n => `<div class="user-item">
+      <span class="${n===cur?'current':''}">${n===cur?'● ':''}${n}</span>
+      <span>
+        ${n===cur?'<span style="color:#888;font-size:12px;">当前</span>':`<button onclick="switchTo('${n}')">切换</button>`}
+        <button onclick="removeUser('${n}')">删除</button>
+      </span>
+    </div>`).join('');
+}
+renderList();
+</script>
+</body>
+</html>

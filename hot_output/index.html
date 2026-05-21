@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小宇宙热门榜 Top 10 — 播客总结报告</title>
+    <style>
+        :root {
+            --bg: #f4f6fa;
+            --card-bg: #ffffff;
+            --text: #2c3e50;
+            --text-secondary: #6b7785;
+            --accent: #4a6fa5;
+            --accent-2: #6b8cba;
+            --accent-light: #e8eef5;
+            --border: #e3e8f0;
+            --tag-bg: #f0f4f8;
+            --tag-text: #4a6fa5;
+            --success: #2ecc71;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            padding: 20px;
+            padding-bottom: 140px; /* 给浮动播放器留位 */
+        }
+        .container { max-width: 920px; margin: 0 auto; }
+
+        .header {
+            background: linear-gradient(135deg, #4a6fa5, #6b8cba);
+            color: white;
+            padding: 40px 30px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(74, 111, 165, 0.18);
+        }
+        .header h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+        .header .meta { font-size: 14px; opacity: 0.9; }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        }
+        .card h2 {
+            font-size: 18px;
+            color: var(--accent);
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--accent-light);
+        }
+
+        .themes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+        .theme-tag {
+            background: var(--tag-bg);
+            color: var(--tag-text);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .theme-tag .count {
+            background: var(--accent);
+            color: white;
+            border-radius: 10px;
+            padding: 1px 6px;
+            font-size: 11px;
+            margin-left: 4px;
+        }
+
+        .insights { margin-top: 12px; padding-left: 18px; }
+        .insights li { margin-bottom: 6px; color: var(--text-secondary); font-size: 14px; }
+
+        /* ============ 榜单 Hero / 排名徽章 ============ */
+        .ranking-hero {
+            background: linear-gradient(135deg, #fff5e6 0%, #ffe8d6 50%, #ffe1f0 100%);
+            border-radius: 16px;
+            padding: 22px 24px 24px;
+            margin-bottom: 22px;
+            box-shadow: 0 4px 16px rgba(255, 122, 89, 0.15);
+            border: 1px solid rgba(255, 138, 101, 0.18);
+        }
+        .ranking-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff6b6b, #ff9966);
+            color: #fff;
+            font-weight: 700;
+            font-size: 15px;
+            letter-spacing: 0.6px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            margin-bottom: 14px;
+            box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+        }
+        .ranking-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 14px;
+        }
+        @media (min-width: 1100px) {
+            .ranking-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+        }
+        .ranking-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 12px;
+            padding: 14px 16px;
+            text-decoration: none;
+            color: var(--text);
+            transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+            border: 1px solid rgba(255, 138, 101, 0.12);
+        }
+        .ranking-item:hover {
+            transform: translateY(-2px);
+            background: #fff;
+            box-shadow: 0 6px 18px rgba(255, 122, 89, 0.18);
+        }
+        .ranking-num {
+            flex-shrink: 0;
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 800;
+            color: #fff;
+            font-family: 'SF Mono', 'Menlo', monospace;
+        }
+        .ranking-item.rank-top .ranking-num {
+            background: linear-gradient(135deg, #ff5e3a, #ff2a68);
+            box-shadow: 0 3px 10px rgba(255, 94, 58, 0.4);
+        }
+        .ranking-item.rank-rest .ranking-num {
+            background: linear-gradient(135deg, #6b8cba, #4a6fa5);
+        }
+        .ranking-info { flex: 1; min-width: 0; }
+        .ranking-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+            line-height: 1.4;
+            margin-bottom: 4px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .ranking-meta {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        .rank-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff5e3a, #ff2a68);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.6px;
+            padding: 3px 10px;
+            border-radius: 12px;
+            margin-right: 8px;
+            vertical-align: middle;
+            box-shadow: 0 2px 6px rgba(255, 94, 58, 0.3);
+        }
+
+        .ranking-update {
+            font-size: 12px;
+            color: #b8552c;
+            margin-bottom: 12px;
+            opacity: 0.85;
+        }
+        .ranking-cta {
+            font-size: 12px;
+            color: #ff5e3a;
+            margin-top: 10px;
+            font-weight: 600;
+            letter-spacing: 0.4px;
+        }
+
+        .ranking-lead {
+            margin-top: 8px;
+            font-size: 13.5px;
+            line-height: 1.65;
+            color: #444;
+            background: rgba(255, 247, 240, 0.8);
+            border-left: 3px solid #ffb199;
+            padding: 8px 12px;
+            border-radius: 6px;
+        }
+        .ranking-bullets {
+            margin: 10px 0 0;
+            padding: 0;
+            list-style: none;
+        }
+        .ranking-bullets li {
+            position: relative;
+            padding: 3px 0 3px 20px;
+            font-size: 13px;
+            line-height: 1.55;
+            color: #333;
+        }
+        .ranking-bullets li::before {
+            content: "▸";
+            position: absolute;
+            left: 4px;
+            top: 3px;
+            color: #ff5e3a;
+            font-weight: 700;
+        }
+        .ranking-tags {
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .ranking-tag {
+            font-size: 11px;
+            color: #b8552c;
+            background: #fff3ec;
+            border: 1px solid #ffd3bf;
+            padding: 2px 8px;
+            border-radius: 10px;
+            line-height: 1.6;
+        }
+
+        .back-bar {
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: #fff;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            padding: 7px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all .15s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .back-btn:hover {
+            background: var(--accent);
+            color: #fff;
+            transform: translateX(-2px);
+        }
+        .follow-btn {
+            background: #fff;
+            color: #b8552c;
+            border: 1px solid #ffd3bf;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all .15s;
+        }
+        .follow-btn[data-active="true"] {
+            background: linear-gradient(135deg, #ff5e3a, #ff2a68);
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 3px 10px rgba(255, 94, 58, 0.35);
+        }
+        .follow-btn:hover { transform: translateY(-1px); }
+        .ep-user-badge {
+            margin-left: auto;
+            font-size: 12px;
+            color: #888;
+            background: #f6f6f6;
+            border: 1px solid #eee;
+            border-radius: 12px;
+            padding: 4px 10px;
+        }
+        .ep-user-badge[data-logged="1"] { color: var(--accent); border-color: #ffd3bf; background: #fff7f2; }
+        .ep-login-link { font-size: 12px; color: #888; text-decoration: none; }
+        .ep-login-link:hover { color: var(--accent); }
+
+        /* —— 首页卡片等高 + 内容裁剪 + 等宽锁定 —— */
+        .ranking-grid { width: 100%; }
+        .ranking-grid > .ranking-item { min-width: 0; width: 100%; box-sizing: border-box; }
+        .ranking-item { min-height: 188px; }
+        .ranking-info {
+            display: flex; flex-direction: column;
+            min-width: 0; flex: 1 1 0;
+            overflow: hidden;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+        .ranking-info > * { min-width: 0; max-width: 100%; }
+        .ranking-cta { margin-top: auto; }
+        .ranking-title, .ranking-meta {
+            overflow-wrap: anywhere; word-break: break-word;
+        }
+        .ranking-lead {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+        .ranking-bullets { max-width: 100%; }
+        .ranking-bullets li {
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+        .ranking-tags { max-width: 100%; }
+
+        /* —— 首页 hero/筛选/用户区 —— */
+        .hero-row {
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 10px; flex-wrap: wrap;
+        }
+        .user-area { display: flex; align-items: center; gap: 8px; }
+        .user-badge {
+            font-size: 12px; color: #888; background: #f6f6f6;
+            border: 1px solid #eee; border-radius: 12px; padding: 4px 10px;
+        }
+        .user-badge[data-logged="1"] { color: var(--accent); border-color: #ffd3bf; background: #fff7f2; }
+        .login-btn {
+            font-size: 12px; color: #fff; background: linear-gradient(135deg,#ff5e3a,#ff2a68);
+            padding: 6px 12px; border-radius: 14px; text-decoration: none; font-weight: 600;
+            box-shadow: 0 2px 8px rgba(255, 94, 58, 0.3);
+        }
+        .login-btn:hover { transform: translateY(-1px); }
+        .filter-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 12px 0 4px; }
+        .filter-btn {
+            background: #fff; color: var(--accent); border: 1px solid #ffd3bf;
+            border-radius: 14px; padding: 5px 14px; font-size: 12px; font-weight: 600;
+            cursor: pointer; transition: all .15s;
+        }
+        .filter-btn[data-active="true"] {
+            background: linear-gradient(135deg,#ff5e3a,#ff2a68);
+            color: #fff; border-color: transparent;
+            box-shadow: 0 2px 8px rgba(255, 94, 58, 0.3);
+        }
+        .filter-tip { font-size: 12px; color: #888; }
+
+        /* —— 我的随笔区域（首页） —— */
+        .notes-card-head {
+            display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;
+        }
+        .notes-card-meta { display: flex; align-items: center; gap: 8px; }
+        .notes-link { font-size: 12px; color: var(--accent); text-decoration: none; }
+        .notes-link:hover { text-decoration: underline; }
+        .my-notes-list { display: flex; flex-direction: column; gap: 8px; }
+        .my-note-item {
+            display: block; padding: 10px 12px; border-radius: 10px;
+            background: #fff7f2; border: 1px solid #ffe1ce; text-decoration: none; color: #333;
+            transition: all .15s;
+        }
+        .my-note-item:hover { background: #ffeede; transform: translateX(2px); }
+        .my-note-head { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+        .my-note-title { font-size: 13.5px; font-weight: 700; color: var(--accent);
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex:1; }
+        .my-note-time { font-size: 11.5px; color: #aaa; flex-shrink: 0; }
+        .my-note-text {
+            margin-top: 4px; font-size: 13px; color: #555; line-height: 1.55;
+            display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+        }
+        .notes-empty { font-size: 13px; color: #999; padding: 14px 0; text-align: center; }
+
+        /* —— 详情页右下浮动随笔抽屉 —— */
+        .notes-fab {
+            position: fixed; right: 20px; bottom: 110px; z-index: 50;
+            width: 52px; height: 52px; border-radius: 50%;
+            background: linear-gradient(135deg,#ff5e3a,#ff2a68); color:#fff;
+            border:0; font-size: 22px; cursor: pointer;
+            box-shadow: 0 6px 20px rgba(255, 94, 58, 0.4); transition: transform .15s;
+        }
+        .notes-fab:hover { transform: scale(1.05); }
+        .notes-fab > span {
+            position: absolute; top: 6px; right: 8px; font-size: 8px; color: #fff200;
+        }
+        .notes-panel {
+            position: fixed; right: 0; top: 0; bottom: 0; width: 360px; max-width: 92vw;
+            background: #fff; box-shadow: -10px 0 30px rgba(0,0,0,0.12); z-index: 60;
+            transform: translateX(100%); transition: transform .25s ease;
+            display: flex; flex-direction: column; padding: 16px;
+        }
+        .notes-panel[data-open="1"] { transform: translateX(0); }
+        .notes-panel-head { display: flex; align-items: center; justify-content: space-between; }
+        .notes-panel-title { font-size: 15px; font-weight: 700; color: var(--accent); }
+        .notes-panel-close {
+            border:0; background: #f6f6f6; width: 28px; height: 28px;
+            border-radius: 50%; cursor: pointer; font-size: 14px;
+        }
+        .notes-panel-close:hover { background: #ffebe0; color: var(--accent); }
+        .notes-panel-meta { display: flex; align-items: center; gap: 8px; margin: 10px 0; }
+        .notes-panel-status { font-size: 11px; color: #888; }
+        .notes-editor {
+            flex: 1; width: 100%; border: 1px solid #eee; border-radius: 10px;
+            padding: 10px 12px; font-size: 14px; line-height: 1.6; color: #333;
+            resize: none; outline: none; font-family: inherit;
+        }
+        .notes-editor:focus { border-color: var(--accent); }
+        .notes-panel-tip { font-size: 11px; color: #aaa; margin-top: 8px; }
+
+        .episode-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            border-left: 4px solid var(--accent);
+        }
+        .episode-card h3 { font-size: 18px; color: var(--text); margin-bottom: 8px; }
+        .episode-meta {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 14px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 16px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 14px;
+            border-radius: 18px;
+            border: 1px solid var(--accent);
+            background: white;
+            color: var(--accent);
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all .15s;
+        }
+        .action-btn:hover { background: var(--accent-light); }
+        .action-btn.primary {
+            background: var(--accent);
+            color: white;
+        }
+        .action-btn.primary:hover { background: #3d5d8a; }
+
+        .summary {
+            background: linear-gradient(180deg, var(--accent-light) 0%, #ffffff 100%);
+            border-radius: 12px;
+            padding: 18px 20px 20px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            border: 1px solid rgba(74, 111, 165, 0.12);
+        }
+        .summary-title {
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--accent);
+            margin-bottom: 14px;
+            letter-spacing: 0.5px;
+        }
+        .summary-cards {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+        .summary-card {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 14px 16px 16px;
+            border-left: 4px solid var(--accent);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+            transition: transform 0.18s ease, box-shadow 0.18s ease;
+        }
+        .summary-card:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(74, 111, 165, 0.12);
+        }
+        .summary-card-head {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+        .summary-card-index {
+            display: inline-block;
+            min-width: 30px;
+            padding: 2px 8px;
+            background: var(--accent);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 700;
+            border-radius: 12px;
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+        .summary-card-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        .summary-card-lead {
+            font-size: 13px;
+            color: #6c7a8b;
+            margin: 4px 0 8px;
+            font-style: italic;
+            line-height: 1.6;
+        }
+        .summary-card-body {
+            font-size: 14px;
+            line-height: 1.85;
+            color: var(--text);
+            white-space: normal;
+            word-break: break-word;
+        }
+        @media (min-width: 900px) {
+            .summary-cards { grid-template-columns: 1fr 1fr; }
+            .summary-card:first-child,
+            .summary-card:nth-child(2) { grid-column: span 1; }
+        }
+
+        .timeline { margin-bottom: 16px; }
+        .timeline h4 { font-size: 14px; color: var(--accent); margin-bottom: 10px; }
+        .timeline-list { display: flex; flex-direction: column; gap: 4px; }
+        .timeline-item {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            padding: 8px 10px;
+            font-size: 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background .15s;
+        }
+        .timeline-item:hover { background: var(--accent-light); }
+        .timeline-item:focus { outline: 2px solid var(--accent); outline-offset: 2px; }
+        .timeline-time {
+            background: var(--accent);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-family: 'SF Mono', Menlo, monospace;
+            font-size: 12px;
+            white-space: nowrap;
+            min-width: 78px;
+            text-align: center;
+            flex-shrink: 0;
+            font-weight: 600;
+        }
+        .timeline-item:hover .timeline-time { background: #3d5d8a; }
+        .timeline-content { color: var(--text); flex: 1; }
+
+        .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+        .tag {
+            background: var(--tag-bg);
+            color: var(--tag-text);
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+
+        .footer {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 12px;
+            padding: 20px 0 10px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            color: var(--accent);
+            margin: 24px 0 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--accent-light);
+        }
+
+        /* 浮动播放器 */
+        .audio-bar {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.97);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-top: 1px solid var(--border);
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+            z-index: 50;
+            padding: 12px 20px;
+        }
+        .audio-bar-inner {
+            max-width: 920px;
+            margin: 0 auto;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .audio-meta { min-width: 180px; flex-shrink: 0; }
+        .audio-title { font-size: 13px; font-weight: 600; color: var(--text); }
+        .audio-current { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+        .speed-group {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .speed-label { font-size: 12px; color: var(--text-secondary); margin-right: 4px; }
+        .speed-btn {
+            background: white;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 4px 10px;
+            border-radius: 14px;
+            font-size: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all .15s;
+        }
+        .speed-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .speed-btn[data-active="true"] {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        @media (max-width: 640px) {
+            body { padding: 12px; padding-bottom: 200px; }
+            .header { padding: 24px 16px; }
+            .header h1 { font-size: 22px; }
+            .episode-card { padding: 16px; }
+            .audio-bar-inner { gap: 8px; }
+            .audio-meta { min-width: 100%; }
+            #audioPlayer { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔥 小宇宙热门榜 Top 10</h1>
+            <div class="meta">榜单 Top 10 · 实时热门内容速览</div>
+        </div>
+        <div class="ranking-hero">
+            <div class="hero-row">
+                <div class="ranking-badge">🔥 小宇宙热门榜 Top 10</div>
+                <div class="user-area">
+                    <span id="heroUserBadge" class="user-badge">未登录</span>
+                    <a class="login-btn" href="login.html">登录 / 切换</a>
+                </div>
+            </div>
+            <div class="ranking-update">更新时间：2026-05-22 02:15</div>
+            <div class="filter-row">
+                <button class="filter-btn" id="filterAll" data-active="true" onclick="setFilter('all')">全部 Top 10</button>
+                <button class="filter-btn" id="filterFollow" onclick="setFilter('follow')">⭐ 我的关注榜</button>
+                <span class="filter-tip">在每集详情页右上角点 ☆ 即可关注 / 取消关注</span>
+            </div>
+            <div class="ranking-grid" id="rankingGrid">
+                <a class="ranking-item rank-top" href="episodes/episode_01.html" data-epkey="episode_01">
+                    <div class="ranking-num">01</div>
+                    <div class="ranking-info">
+                        <div class="ranking-title">S9E1 鲁豫对话张赞英 | 那朵叫「赞英」的花</div>
+                        <div class="ranking-meta">📻 岩中花述 · ⏱ 86 分钟</div>
+                        <div class="ranking-lead">《岩中花述》陈婧霏</div>
+                        <ul class="ranking-bullets">
+                            <li>14岁离家，兴奋比恐惧大</li>
+                            <li>从文工团到广播电台</li>
+                            <li>绝望时，「我望着植物，植物也望着我」</li>
+                        </ul>
+                        <div class="ranking-cta">查看详细解析 →</div>
+                    </div>
+                </a>
+                <a class="ranking-item rank-top" href="episodes/episode_02.html" data-epkey="episode_02">
+                    <div class="ranking-num">02</div>
+                    <div class="ranking-info">
+                        <div class="ranking-title">淘宝闪购｜中国鞋履品牌吸引海外游客，Lululemon 公开与创始人的矛盾细节</div>
+                        <div class="ranking-meta">📻 声动早咖啡 · ⏱ 11 分钟</div>
+                        <div class="ranking-lead">本周节目由淘宝闪购（https://sourl.co/8E3jBj）冠名播出，淘宝闪购，点外卖，更优惠 天热不想出门、吃饭不想排队、520 忙到忘记送花？</div>
+                        <ul class="ranking-bullets">
+                            <li>本周节目由淘宝闪购（https://sourl.co/8E3jBj）冠名播出，淘宝闪购，点外卖，更优惠 天热…</li>
+                            <li>——这些问题，上淘宝闪购都能解决。</li>
+                            <li>会过日子的人都在用淘宝闪购！</li>
+                        </ul>
+                        <div class="ranking-tags"><span class="ranking-tag">设计</span><span class="ranking-tag">商业</span><span class="ranking-tag">科技</span></div>
+                        <div class="ranking-cta">查看详细解析 →</div>
+                    </div>
+                </a>
+                <a class="ranking-item rank-top" href="episodes/episode_03.html" data-epkey="episode_03">
+                    <div class="ranking-num">03</div>
+                    <div class="ranking-info">
+                        <div class="ranking-title">自我进化论｜No.80：人潮退去后，如何在孤独中长出新的自己？</div>
+                        <div class="ranking-meta">📻 自我进化论 · ⏱ 57 分钟</div>
+                        <div class="ranking-lead">这一期节目，我想和你聊聊「孤独」。</div>
+                        <ul class="ranking-bullets">
+                            <li>为什么我过去三个月没更新？</li>
+                            <li>这期节目，只想回到最初“为自己表达”的状态</li>
+                            <li>孤独感，为什么正在成为这个时代每个人绕不开的话题？</li>
+                        </ul>
+                        <div class="ranking-tags"><span class="ranking-tag">音乐</span></div>
+                        <div class="ranking-cta">查看详细解析 →</div>
+                    </div>
+                </a>
+                <a class="ranking-item rank-rest" href="episodes/episode_04.html" data-epkey="episode_04">
+                    <div class="ranking-num">04</div>
+                    <div class="ranking-info">
+                        <div class="ranking-title">Vol.155 为什么我们越想自律，就越容易陷入拖延的怪圈？5个案例帮你看清真正的内在阻力｜职场本硕博Q&amp;amp;A</div>
+                        <div class="ranking-meta">📻 钱婧老师的会客厅 · ⏱ 72 分钟</div>
+                        <div class="ranking-lead">自律与拖延，看似水火不容，却总在我们最想改变时“暗中联手”：越逼自己早起、专注、高效，反而越忍不住刷手机、发呆、逃避。</div>
+                        <ul class="ranking-bullets">
+                            <li>自律与拖延，看似水火不容，却总在我们最想改变时“暗中联手”：越逼自己早起、专注、高效，反而越忍不住刷手机、发…</li>
+                            <li>究其根源并不是意志力差，而是我们并没看清真正的内在阻力。</li>
+                            <li>自律与拖延的拉锯，其实和选保险很像：越怕选错、越拖延，越容易陷入焦虑。</li>
+                        </ul>
+                        <div class="ranking-tags"><span class="ranking-tag">经济</span><span class="ranking-tag">科技</span></div>
+                        <div class="ranking-cta">查看详细解析 →</div>
+                    </div>
+                </a>
+                <a class="ranking-item rank-rest" href="episodes/episode_05.html" data-epkey="episode_05">
+                    <div class="ranking-num">05</div>
+                    <div class="ranking-info">
+                        <div class="ranking-title">带家人旅行：难啊！孩儿苦心计划，不如二老灵机一动！</div>
+                        <div class="ranking-meta">📻 凹凸电波 · ⏱ 68 分钟</div>
+                        <div class="ranking-lead">带家人旅行：难啊！孩儿苦心计划，不如二老灵机一动！</div>
+                        <ul class="ranking-bullets">
+                            <li>带家人旅行：难啊！孩儿苦心计划，不如二老灵机一动！</li>
+                            <li>出自播客《凹凸电波》，时长约 68 分钟，发布于 18 May 2026。</li>
+                            <li>本期在当前热门榜中排名第 5 位，由听众讨论度与播放热度共同推选。</li>
+                        </ul>
+                        <div class="ranking-cta">查看详细解析 →</div>
+                    </div>
+                </a>
+                <a class="ranking-item rank-rest" href="episodes/episode_06.html" data-epkey="episode_06">
+                    <div class="ranking-num">06</div>
+                    <div class="ranking-info">
+                        <div class="ranking-title">当我不再试图被所有人喜欢</div>
+                        <div class="ranking-meta">📻 谭立人 · ⏱ 56 分钟</div>
+                        <div class="ranking-lead">为什么我们总渴望被人喜欢？</div>
+                        <ul class="ranking-bullets">
+                            <li>为什么我们总在意别人怎么看自己</li>
+                            <li>当负面评价真正刺痛我</li>
+                            <li>那只美少女战士书包带给我的羞耻感</li>
+                        </ul>
+                        <div class="ranking-tags"><span class="ranking-tag">商业</span></div>
+                        <div class="ranking-cta">查看详细解析 →</div>
+                    </div>
+                </a>
+                <a class="ranking-item rank-rest" href="episodes/episode_07.html" data-epkey="episode_07">
+                    <div class="ranking-num">07</div>
+                    <div class="ranking-info">
+                        <div class="ranking-title">vol.49 对谈西高地Papi妈妈：伤痛不必痊愈，但别让它替你选择</div>
+                        <div class="ranking-meta">📻 天真不天真 · ⏱ 58 分钟</div>
+                        <div class="ranking-lead">本期播客邀来北京首例宠物中毒刑事公诉案新闻当事人——西高地Papi妈妈，她叫Penny。</div>
+                        <ul class="ranking-bullets">
+                            <li>热搜上的人和背后真实的生活，是什么样子？</li>
+                            <li>因为维权被中断的三年生活，Penny仍在学习如何自洽</li>
+                            <li>维权发心，是最朴素的“这件事不应该是这样”</li>
+                        </ul>
+                        <div class="ranking-cta">查看详细解析 →</div>
+                    </div>
+                </a>
+                <a class="ranking-item rank-rest" href="episodes/episode_08.html" data-epkey="episode_08">
+                    <div class="ranking-num">08</div>
+                    <div class="ranking-info">
+                        <div class="ranking-title">148. 见字如面</div>
+                        <div class="ranking-meta">📻 霓达播客 · ⏱ 1 分钟</div>
+                        <div class="ranking-lead">*大家好。</div>
+                        <ul class="ranking-bullets">
+                            <li>*大家好。</li>
+                            <li>本期节目为付费节目，请认真阅读本条后，再决定是否购买，感谢您的对霓达播客的支持！</li>
+                            <li>另外，播客节目制作不易，请您一定通过正规渠道购买，我们由衷地希望，主播和听众共同去创建和维护一个良好的播客环境。</li>
+                        </ul>
+                        <div class="ranking-tags"><span class="ranking-tag">社会</span><span class="ranking-tag">科技</span><span class="ranking-tag">哲学</span><span class="ranking-tag">文化</span></div>
+                        <div class="ranking-cta">查看详细解析 →</div>
+                    </div>
+                </a>
+                <a class="ranking-item rank-rest" href="episodes/episode_09.html" data-epkey="episode_09">
+                    <div class="ranking-num">09</div>
+                    <div class="ranking-info">
+                        <div class="ranking-title">从消费到消废，聊聊那些让生活低能耗、高丝滑的花钱智慧！</div>
+                        <div class="ranking-meta">📻 搞钱女孩 · ⏱ 45 分钟</div>
+                        <div class="ranking-lead">本期节目与【天猫】共同呈现。</div>
+                        <ul class="ranking-bullets">
+                            <li>强女花钱“两花”：花钱买效率、买状态</li>
+                            <li>财神不入脏门，所以花2000找收纳师？</li>
+                            <li>把钱花在能接住你疲惫的地方、能消除卡点的地方</li>
+                        </ul>
+                        <div class="ranking-tags"><span class="ranking-tag">经济</span><span class="ranking-tag">科技</span><span class="ranking-tag">哲学</span><span class="ranking-tag">商业</span></div>
+                        <div class="ranking-cta">查看详细解析 →</div>
+                    </div>
+                </a>
+                <a class="ranking-item rank-rest" href="episodes/episode_10.html" data-epkey="episode_10">
+                    <div class="ranking-num">10</div>
+                    <div class="ranking-info">
+                        <div class="ranking-title">vol.251不是我不明白，这世界变化快</div>
+                        <div class="ranking-meta">📻 正经叭叭 · ⏱ 102 分钟</div>
+                        <div class="ranking-lead">本期主播：林简七、好梦、大盆、大刘、蛋蛋、大老王 林简七(小红书@林简七):everybodiskungfufightingyourmindbecomesfastaslightning 好梦(小红书@别掐好梦):西涯…</div>
+                        <ul class="ranking-bullets">
+                            <li>本期主播：林简七、好梦、大盆、大刘、蛋蛋、大老王 林简七(小红书@林简七):everybodiskungfu…</li>
+                            <li>这是一档由喜剧演员们和现场观众朋友们共同录制的播客节目，每个周二的0点左右在小宇宙更新，喜马拉雅、网易云音乐…</li>
+                            <li>小红书关注@惊讶小红红，可以看到专场预告、叭叭招募、演出返图、录制现场、追星合影等资讯。</li>
+                        </ul>
+                        <div class="ranking-tags"><span class="ranking-tag">音乐</span></div>
+                        <div class="ranking-cta">查看详细解析 →</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="card notes-card" id="myNotesCard">
+            <div class="notes-card-head">
+                <h2>📝 我的随笔</h2>
+                <div class="notes-card-meta">
+                    <span id="notesUserBadge" class="user-badge">未登录</span>
+                    <a class="notes-link" href="login.html">切换账号 →</a>
+                </div>
+            </div>
+            <div id="myNotesList" class="my-notes-list">
+                <div class="notes-empty">还没有任何随笔。点开任意一集，在右侧面板写下你的感想吧～</div>
+            </div>
+        </div>
+
+        <div class="footer">
+            报告生成时间：2026-05-22 02:15 · Podcast Digest
+        </div>
+    </div>
+
+    <script>
+        // —— 用户/随笔/关注最小核心 ——
+        const PD_USER_KEY = 'pd_current_user';
+        function pdGetUser() { return localStorage.getItem(PD_USER_KEY) || ''; }
+        function pdNotesKey(user) { return 'pd_notes::' + (user || 'guest'); }
+        function pdFollowKey(user) { return 'pd_follow::' + (user || 'guest'); }
+        function pdLoadNotes(user) {
+            try { return JSON.parse(localStorage.getItem(pdNotesKey(user)) || '{}'); }
+            catch (e) { return {}; }
+        }
+        function pdLoadFollow(user) {
+            try { return JSON.parse(localStorage.getItem(pdFollowKey(user)) || '[]'); }
+            catch (e) { return []; }
+        }
+
+        function refreshUserBadges() {
+            const user = pdGetUser();
+            ['heroUserBadge', 'notesUserBadge'].forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.textContent = user ? ('@' + user) : '未登录（游客模式）';
+                el.dataset.logged = user ? '1' : '0';
+            });
+        }
+
+        function setFilter(mode) {
+            const user = pdGetUser();
+            const follows = new Set(pdLoadFollow(user));
+            document.getElementById('filterAll').dataset.active = (mode === 'all') ? 'true' : 'false';
+            document.getElementById('filterFollow').dataset.active = (mode === 'follow') ? 'true' : 'false';
+            const items = document.querySelectorAll('#rankingGrid .ranking-item');
+            let shown = 0;
+            items.forEach(it => {
+                const key = it.dataset.epkey;
+                const show = (mode === 'all') || follows.has(key);
+                it.style.display = show ? '' : 'none';
+                if (show) shown++;
+            });
+            const tip = document.querySelector('.filter-tip');
+            if (mode === 'follow') {
+                tip.textContent = shown ? `已为你筛选 ${shown} 集关注内容` :
+                    (user ? '你还没有关注任何一集，进入详情页点 ☆ 即可加入关注榜' :
+                            '请先登录，再进入详情页点 ☆ 即可加入关注榜');
+            } else {
+                tip.textContent = '在每集详情页右上角点 ☆ 即可关注 / 取消关注';
+            }
+        }
+
+        function renderMyNotes() {
+            const user = pdGetUser();
+            const listEl = document.getElementById('myNotesList');
+            const notes = pdLoadNotes(user);
+            const items = Object.entries(notes)
+                .filter(([k, v]) => v && v.text && v.text.trim())
+                .sort((a, b) => (b[1].updatedAt || 0) - (a[1].updatedAt || 0));
+            if (!items.length) {
+                listEl.innerHTML = '<div class="notes-empty">还没有任何随笔。点开任意一集，在右侧面板写下你的感想吧～</div>';
+                return;
+            }
+            listEl.innerHTML = items.map(([epKey, n]) => {
+                const time = new Date(n.updatedAt || Date.now()).toLocaleString('zh-CN', {hour12:false});
+                const title = (n.epTitle || epKey).replace(/</g,'&lt;');
+                const text = (n.text || '').replace(/</g,'&lt;');
+                const href = 'episodes/' + epKey + '.html';
+                return `<a class="my-note-item" href="${href}">
+                    <div class="my-note-head">
+                        <span class="my-note-title">${title}</span>
+                        <span class="my-note-time">${time}</span>
+                    </div>
+                    <div class="my-note-text">${text}</div>
+                </a>`;
+            }).join('');
+        }
+
+        refreshUserBadges();
+        renderMyNotes();
+        window.addEventListener('storage', () => {
+            refreshUserBadges();
+            renderMyNotes();
+            // 当前若处于关注榜模式，重新筛一次
+            if (document.getElementById('filterFollow').dataset.active === 'true') setFilter('follow');
+        });
+        window.setFilter = setFilter;
+    </script>
+</body>
+</html>
