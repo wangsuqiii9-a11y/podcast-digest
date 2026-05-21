@@ -556,10 +556,10 @@ class ReportGenerator:
                     lead_text = (sps[0].get("lead") or sps[0].get("content") or "").strip()
                 if not lead_text:
                     lead_text = (ep.get("summary") or "").strip()
-                # 取首段、限长，避免卡片过长
+                # 取首段、限长，避免卡片过长（CSS 控制最多 3 行，这里宽容一些）
                 lead_text = lead_text.replace("\r\n", "\n").split("\n\n")[0].split("\n")[0]
-                if len(lead_text) > 110:
-                    lead_text = lead_text[:108].rstrip() + "…"
+                if len(lead_text) > 160:
+                    lead_text = lead_text[:158].rstrip() + "…"
 
                 # —— 核心要点：取 key_points 前 3 条，去掉时间码前缀 ——
                 kps_raw = ep.get("key_points") or []
@@ -578,8 +578,8 @@ class ReportGenerator:
                     s = s.replace("\n", " ").strip()
                     if not s:
                         continue
-                    if len(s) > 56:
-                        s = s[:54].rstrip() + "…"
+                    if len(s) > 80:
+                        s = s[:78].rstrip() + "…"
                     bullets.append(s)
                     if len(bullets) >= 3:
                         break
@@ -1505,10 +1505,10 @@ renderList();
         .ep-login-link {{ font-size: 12px; color: #888; text-decoration: none; }}
         .ep-login-link:hover {{ color: var(--accent); }}
 
-        /* —— 首页卡片等高 + 内容裁剪 + 等宽锁定 —— */
-        .ranking-grid {{ width: 100%; }}
+        /* —— 首页卡片等宽 + 自适应高 + 内容温和裁剪 —— */
+        .ranking-grid {{ width: 100%; align-items: stretch; }}
         .ranking-grid > .ranking-item {{ min-width: 0; width: 100%; box-sizing: border-box; }}
-        .ranking-item {{ min-height: 188px; }}
+        .ranking-item {{ min-height: 200px; }}
         .ranking-info {{
             display: flex; flex-direction: column;
             min-width: 0; flex: 1 1 0;
@@ -1523,7 +1523,7 @@ renderList();
         }}
         .ranking-lead {{
             display: -webkit-box;
-            -webkit-line-clamp: 2;
+            -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
             overflow-wrap: anywhere;
@@ -1532,7 +1532,7 @@ renderList();
         .ranking-bullets {{ max-width: 100%; }}
         .ranking-bullets li {{
             display: -webkit-box;
-            -webkit-line-clamp: 1;
+            -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
             overflow-wrap: anywhere;
