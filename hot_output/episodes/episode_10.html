@@ -292,10 +292,10 @@
         .ep-login-link { font-size: 12px; color: #888; text-decoration: none; }
         .ep-login-link:hover { color: var(--accent); }
 
-        /* —— 首页卡片等高 + 内容裁剪 + 等宽锁定 —— */
-        .ranking-grid { width: 100%; }
+        /* —— 首页卡片等宽 + 自适应高 + 内容温和裁剪 —— */
+        .ranking-grid { width: 100%; align-items: stretch; }
         .ranking-grid > .ranking-item { min-width: 0; width: 100%; box-sizing: border-box; }
-        .ranking-item { min-height: 188px; }
+        .ranking-item { min-height: 200px; }
         .ranking-info {
             display: flex; flex-direction: column;
             min-width: 0; flex: 1 1 0;
@@ -310,7 +310,7 @@
         }
         .ranking-lead {
             display: -webkit-box;
-            -webkit-line-clamp: 2;
+            -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
             overflow-wrap: anywhere;
@@ -319,7 +319,7 @@
         .ranking-bullets { max-width: 100%; }
         .ranking-bullets li {
             display: -webkit-box;
-            -webkit-line-clamp: 1;
+            -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
             overflow-wrap: anywhere;
@@ -674,7 +674,7 @@
                 <span>📅 Mon, 18 Ma</span>
                 
             </div>
-            <div class="actions"><a class="action-btn primary" href="https://www.xiaoyuzhoufm.com/episode/60e43cecc4e7c8188c2f92a4" target="_blank" rel="noopener">↗ 在小宇宙打开</a><button class="action-btn" onclick="playSegment(0, 0, '从头开始')">▶ 从头收听</button></div>
+            <div class="actions"><a class="action-btn primary" href="https://podcasts.apple.com/cn/podcast/%E6%AD%A3%E7%BB%8F%E5%8F%AD%E5%8F%AD/id1575323064" target="_blank" rel="noopener">↗ 打开节目主页</a><button class="action-btn" onclick="playSegment(0, 0, '从头开始')">▶ 从头收听</button></div>
             <div class="summary">
                 <div class="summary-title">📌 内容概要</div>
                 <div class="summary-cards">
@@ -724,7 +724,7 @@
         </div>
 
         <div class="footer">
-            报告生成时间：2026-05-22 02:15 · Podcast Digest
+            报告生成时间：2026-05-22 02:58 · Podcast Digest
         </div>
     </div>
 
@@ -745,7 +745,7 @@
     </aside>
 
     <script>
-        const EPISODES = [{"index": 0, "audio_url": "https://dts-api.xiaoyuzhoufm.com/track/60e43cecc4e7c8188c2f92a4/6a0b1af21b7bd502956312c4/media.xyzcdn.net/60e43cecc4e7c8188c2f92a4/lp2JEnGkUo8UmZkKYTVGOgFZLUF4.m4a", "episode_url": "https://www.xiaoyuzhoufm.com/episode/60e43cecc4e7c8188c2f92a4", "title": "vol.251不是我不明白，这世界变化快"}];
+        const EPISODES = [{"index": 0, "audio_url": "https://dts-api.xiaoyuzhoufm.com/track/60e43cecc4e7c8188c2f92a4/6a0b1af21b7bd502956312c4/media.xyzcdn.net/60e43cecc4e7c8188c2f92a4/lp2JEnGkUo8UmZkKYTVGOgFZLUF4.m4a", "episode_url": "https://podcasts.apple.com/cn/podcast/%E6%AD%A3%E7%BB%8F%E5%8F%AD%E5%8F%AD/id1575323064", "title": "vol.251不是我不明白，这世界变化快"}];
         const EP_KEY = "episode_10";
         const EP_TITLE = "vol.251不是我不明白，这世界变化快";
         const audio = document.getElementById('audioPlayer');

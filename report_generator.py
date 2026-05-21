@@ -1094,7 +1094,7 @@ renderList();
         header_actions = []
         if episode_url:
             header_actions.append(
-                f'<a class="action-btn primary" href="{_esc(episode_url)}" target="_blank" rel="noopener">↗ 在小宇宙打开</a>'
+                f'<a class="action-btn primary" href="{_esc(episode_url)}" target="_blank" rel="noopener">↗ 打开节目主页</a>'
             )
         if audio_url:
             header_actions.append(
